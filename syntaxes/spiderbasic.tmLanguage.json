@@ -1,0 +1,413 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "SpiderBasic",
+  "scopeName": "source.spiderbasic",
+  "fileTypes": [
+    ".sb",
+    ".sbi",
+    ".sbf",
+    ".sbp"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#inline-js"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#compiler-directives"
+    },
+    {
+      "include": "#control-flow"
+    },
+    {
+      "include": "#declarations"
+    },
+    {
+      "include": "#builtins"
+    },
+    {
+      "include": "#pb-constants"
+    },
+    {
+      "include": "#user-constants"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#labels"
+    },
+    {
+      "include": "#procedure-call"
+    },
+    {
+      "include": "#variables"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.semicolon.spiderbasic",
+          "match": ";.*$"
+        }
+      ]
+    },
+    "inline-js": {
+      "name": "meta.embedded.block.javascript",
+      "match": "^!.*$",
+      "captures": {
+        "0": {
+          "name": "source.js.embedded.spiderbasic"
+        }
+      }
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.escaped.spiderbasic",
+          "begin": "~\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.spiderbasic",
+              "match": "\\\\[nt\"\\\\]"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.double.spiderbasic",
+          "begin": "\"",
+          "end": "\""
+        }
+      ]
+    },
+    "compiler-directives": {
+      "patterns": [
+        {
+          "name": "keyword.control.compiler.spiderbasic",
+          "match": "(?i)\\b(CompilerIf|CompilerElseIf|CompilerElse|CompilerEndIf|CompilerSelect|CompilerCase|CompilerDefault|CompilerEndSelect|CompilerError|CompilerWarning|EnableJS|DisableJS)\\b"
+        },
+        {
+          "name": "constant.language.compiler.spiderbasic",
+          "match": "\\b(#PB_Compiler_OS|#PB_OS_Windows|#PB_OS_Linux|#PB_OS_MacOS|#PB_OS_Android|#PB_OS_iOS|#PB_Compiler_Processor|#PB_Processor_x86|#PB_Processor_x64|#PB_Processor_arm|#PB_Processor_arm64|#PB_Compiler_Date|#PB_Compiler_File|#PB_Compiler_Line|#PB_Compiler_Version|#PB_Compiler_Home|#PB_Compiler_IsMainFile|#PB_Compiler_Thread|#PB_Compiler_Unicode|#PB_Compiler_Debugger)\\b"
+        }
+      ]
+    },
+    "control-flow": {
+      "name": "keyword.control.spiderbasic",
+      "match": "(?i)\\b(If|Else|ElseIf|EndIf|Select|Case|Default|EndSelect|For|To|Step|Next|ForEach|While|Wend|Repeat|Until|ForEver|Break|Continue|Goto|Gosub|Return|End|Stop|FakeReturn|Import|ImportC|EndImport|IncludeFile|XIncludeFile|IncludeBinary|IncludePath|EnableExplicit|DisableExplicit|EnableDebugger|DisableDebugger)\\b"
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "name": "keyword.declaration.procedure.spiderbasic",
+          "match": "(?i)\\b(Procedure|ProcedureC|EndProcedure|ProcedureReturn|Declare|DeclareC|Prototype|PrototypeC|Macro|EndMacro|Structure|EndStructure|StructureUnion|EndStructureUnion|Interface|EndInterface|Extends|Module|EndModule|DeclareModule|EndDeclareModule|UseModule|UnuseModule|Enumeration|EndEnumeration)\\b"
+        },
+        {
+          "name": "keyword.declaration.variable.spiderbasic",
+          "match": "(?i)\\b(Define|Dim|ReDim|Global|Protected|Static|Shared|Threaded|NewList|NewMap|FreeList|FreeMap|DataSection|EndDataSection|Data|Read|Restore|Runtime)\\b"
+        },
+        {
+          "name": "keyword.other.spiderbasic",
+          "match": "(?i)\\b(With|EndWith|And|Or|Not|XOr|As|Align|OffsetOf|SizeOf|TypeOf|Swap|Bool|Debug|DebugLevel|CallDebugger)\\b"
+        }
+      ]
+    },
+    "builtins": {
+      "patterns": [
+        {
+          "comment": "2DDrawing functions",
+          "name": "support.function.drawing.spiderbasic",
+          "match": "(?i)\\b(OutputHeight|StartDrawing|OutputDepth|OutputWidth|DrawingFont|DrawingMode|StopDrawing|TextHeight|FrontColor|DrawImage|BackColor|TextWidth|RoundBox|DrawText|Ellipse|LineXY|Circle|Alpha|Point|Green|RGBA|Blue|Plot|Line|Box|RGB|Red)(?=\\s*\\()"
+        },
+        {
+          "comment": "Accelerometer functions",
+          "name": "support.function.mobile.spiderbasic",
+          "match": "(?i)\\b(StartAccelerometer|AccelerometerTime|StopAccelerometer|AccelerometerZ|AccelerometerX|AccelerometerY)(?=\\s*\\()"
+        },
+        {
+          "comment": "Array functions",
+          "name": "support.function.collection.spiderbasic",
+          "match": "(?i)\\b(CopyArray|ArraySize|FreeArray)(?=\\s*\\()"
+        },
+        {
+          "comment": "Cipher functions",
+          "name": "support.function.data.spiderbasic",
+          "match": "(?i)\\b(AddFingerprintBuffer|Base64EncoderBuffer|UseCRC32Fingerprint|Base64DecoderBuffer|UseSHA1Fingerprint|UseSHA3Fingerprint|UseSHA2Fingerprint|FinishFingerprint|StringFingerprint|UseMD5Fingerprint|StartFingerprint|AddCipherBuffer|StartAESCipher|Base64Encoder|Base64Decoder|IsFingerprint|FinishCipher|Fingerprint|AESDecoder|AESEncoder)(?=\\s*\\()"
+        },
+        {
+          "comment": "Clipboard functions",
+          "name": "support.function.requester.spiderbasic",
+          "match": "(?i)\\b(SetClipboardText)(?=\\s*\\()"
+        },
+        {
+          "comment": "Database functions",
+          "name": "support.function.database.spiderbasic",
+          "match": "(?i)\\b(ExportDatabaseMemory|AffectedDatabaseRows|DatabaseColumnIndex|FinishDatabaseQuery|DatabaseColumnName|GetDatabaseString|CheckDatabaseNull|GetDatabaseDouble|SetDatabaseString|SetDatabaseDouble|SetDatabaseFloat|GetDatabaseFloat|FirstDatabaseRow|DatabaseColumns|SetDatabaseLong|GetDatabaseLong|NextDatabaseRow|GetDatabaseBlob|SetDatabaseBlob|GetDatabaseQuad|SetDatabaseNull|SetDatabaseQuad|DatabaseUpdate|ExportDatabase|DatabaseQuery|DatabaseError|CloseDatabase|OpenDatabase|DatabaseID|IsDatabase)(?=\\s*\\()"
+        },
+        {
+          "comment": "Date functions",
+          "name": "support.function.date.spiderbasic",
+          "match": "(?i)\\b(FormatDate|DayOfYear|ParseDate|DayOfWeek|AddDate|Minute|Second|Month|Year|Hour|Date|Day)(?=\\s*\\()"
+        },
+        {
+          "comment": "Debugger functions",
+          "name": "support.function.debug.spiderbasic",
+          "match": "(?i)\\b(CloseDebugOutput|ClearDebugOutput|ShowDebugOutput)(?=\\s*\\()"
+        },
+        {
+          "comment": "Desktop functions",
+          "name": "support.function.system.spiderbasic",
+          "match": "(?i)\\b(DesktopResolutionY|DesktopResolutionX|DesktopUnscaledX|DesktopFrequency|DesktopUnscaledY|ExamineDesktops|DesktopScaledX|DesktopScaledY|DesktopMouseY|DesktopHeight|DesktopMouseX|DesktopWidth|DesktopDepth|DesktopName|DesktopX|DesktopY)(?=\\s*\\()"
+        },
+        {
+          "comment": "Dialog functions",
+          "name": "support.function.window.spiderbasic",
+          "match": "(?i)\\b(OpenXMLDialog|RefreshDialog|CreateDialog|DialogWindow|DialogGadget|DialogError|FreeDialog|IsDialog|DialogID)(?=\\s*\\()"
+        },
+        {
+          "comment": "File functions",
+          "name": "support.function.file.spiderbasic",
+          "match": "(?i)\\b(WriteUnicodeCharacter|ReadUnicodeCharacter|WriteAsciiCharacter|ReadAsciiCharacter|WriteStringFormat|ReadStringFormat|ExportFileMemory|WriteCharacter|ReadCharacter|WriteInteger|WriteStringN|FileProgress|ReadInteger|WriteDouble|WriteString|ExportFile|ReadDouble|CreateFile|ReadString|WriteFloat|ReadFloat|WriteData|FetchData|WriteWord|WriteByte|CloseFile|WriteQuad|WriteLong|FileSeek|OpenFile|ReadWord|ReadByte|ReadLong|ReadQuad|ReadFile|ReadData|IsFile|FileID|Loc|Lof|Eof)(?=\\s*\\()"
+        },
+        {
+          "comment": "Font functions",
+          "name": "support.function.image.spiderbasic",
+          "match": "(?i)\\b(FreeFont|LoadFont|FontID|IsFont)(?=\\s*\\()"
+        },
+        {
+          "comment": "Gadget functions",
+          "name": "support.function.window.spiderbasic",
+          "match": "(?i)\\b(GetGadgetItemAttribute|SetGadgetItemAttribute|SetGadgetItemState|GetGadgetAttribute|GetGadgetItemState|CanvasVectorOutput|SetGadgetItemImage|SetGadgetAttribute|RemoveGadgetColumn|ButtonImageGadget|UnbindGadgetEvent|SetGadgetItemData|ProgressBarGadget|GetGadgetItemText|SetGadgetItemText|GetGadgetItemData|ScrollAreaGadget|ClearGadgetItems|RemoveGadgetItem|CountGadgetItems|GetActiveGadget|CloseGadgetList|ContainerGadget|AddGadgetColumn|BindGadgetEvent|HyperLinkGadget|SetActiveGadget|ListViewGadget|OpenGadgetList|ComboBoxGadget|SplitterGadget|SetGadgetColor|SetGadgetState|CalendarGadget|TrackBarGadget|ListIconGadget|CheckBoxGadget|GetGadgetColor|GetGadgetState|DisableGadget|AddGadgetItem|UseGadgetList|SetGadgetFont|SetGadgetData|GetGadgetData|SetGadgetText|GadgetToolTip|GetGadgetText|CanvasGadget|OptionGadget|GadgetHeight|EditorGadget|CanvasOutput|ButtonGadget|ResizeGadget|StringGadget|PanelGadget|FrameGadget|GadgetWidth|ImageGadget|FreeGadget|TextGadget|GadgetType|SpinGadget|DateGadget|HideGadget|TreeGadget|WebGadget|IsGadget|GadgetID|GadgetX|GadgetY)(?=\\s*\\()"
+        },
+        {
+          "comment": "Geolocation functions",
+          "name": "support.function.mobile.spiderbasic",
+          "match": "(?i)\\b(GeolocationLongitude|GeolocationLatitude|GeolocationAltitude|GeolocationHeading|StartGeolocation|GeolocationSpeed|StopGeolocation|GeolocationTime)(?=\\s*\\()"
+        },
+        {
+          "comment": "Http functions",
+          "name": "support.function.network.spiderbasic",
+          "match": "(?i)\\b(HTTPRequest|URLDecoder|URLEncoder)(?=\\s*\\()"
+        },
+        {
+          "comment": "Image functions",
+          "name": "support.function.image.spiderbasic",
+          "match": "(?i)\\b(ImageVectorOutput|EncodeImage|ExportImage|ImageHeight|CreateImage|ImageFormat|ResizeImage|ImageOutput|ImageDepth|ImageWidth|CopyImage|GrabImage|LoadImage|FreeImage|ImageID|IsImage)(?=\\s*\\()"
+        },
+        {
+          "comment": "InAppPurchase functions",
+          "name": "support.function.mobile.spiderbasic",
+          "match": "(?i)\\b(AppProductDescription|PurchaseAppProduct|RegisterAppProduct|ExamineAppProducts|FetchAppProducts|AppProductPrice|AppProductName|NextAppProduct|AppProductID)(?=\\s*\\()"
+        },
+        {
+          "comment": "Joystick functions",
+          "name": "support.function.input.spiderbasic",
+          "match": "(?i)\\b(ExamineJoystick|JoystickButton|JoystickAxisZ|JoystickAxisX|JoystickAxisY|InitJoystick|JoystickName)(?=\\s*\\()"
+        },
+        {
+          "comment": "Json functions",
+          "name": "support.function.data.spiderbasic",
+          "match": "(?i)\\b(ExtractJSONStructure|InsertJSONStructure|ResizeJSONElements|ExamineJSONMembers|JSONErrorPosition|RemoveJSONElement|ClearJSONElements|RemoveJSONMember|JSONErrorMessage|ClearJSONMembers|ExtractJSONArray|InsertJSONArray|ExtractJSONList|JSONMemberValue|ExtractJSONMap|SetJSONInteger|AddJSONElement|GetJSONInteger|InsertJSONList|GetJSONBoolean|NextJSONMember|JSONObjectSize|SetJSONBoolean|GetJSONElement|GetJSONString|GetJSONMember|SetJSONObject|JSONArraySize|InsertJSONMap|AddJSONMember|JSONMemberKey|GetJSONDouble|SetJSONDouble|SetJSONString|JSONErrorLine|GetJSONFloat|SetJSONFloat|SetJSONArray|GetJSONQuad|SetJSONNull|SetJSONQuad|ComposeJSON|CreateJSON|ExportJSON|ParseJSON|JSONValue|JSONType|FreeJSON|LoadJSON|IsJSON)(?=\\s*\\()"
+        },
+        {
+          "comment": "Keyboard functions",
+          "name": "support.function.input.spiderbasic",
+          "match": "(?i)\\b(KeyboardReleased|ExamineKeyboard|KeyboardPushed|KeyboardInkey|InitKeyboard)(?=\\s*\\()"
+        },
+        {
+          "comment": "List functions",
+          "name": "support.function.collection.spiderbasic",
+          "match": "(?i)\\b(ChangeCurrentElement|PushListPosition|PopListPosition|PreviousElement|DeleteElement|SelectElement|InsertElement|SwapElements|FirstElement|LastElement|NextElement|MoveElement|MergeLists|AddElement|ClearList|SplitList|ListIndex|ResetList|CopyList|ListSize|FreeList)(?=\\s*\\()"
+        },
+        {
+          "comment": "Map functions",
+          "name": "support.function.collection.spiderbasic",
+          "match": "(?i)\\b(DeleteMapElement|PushMapPosition|FindMapElement|NextMapElement|PopMapPosition|AddMapElement|ResetMap|ClearMap|MapSize|FreeMap|CopyMap|MapKey)(?=\\s*\\()"
+        },
+        {
+          "comment": "Math functions",
+          "name": "support.function.math.spiderbasic",
+          "match": "(?i)\\b(IsInfinity|RandomSeed|Infinity|Degree|Random|Radian|Round|ACosH|Log10|IsNaN|ATanH|ATan2|ASinH|ASin|ACos|TanH|CosH|Sign|IntQ|SinH|ATan|Sqr|Mod|NaN|Int|Sin|Pow|Exp|Cos|Log|Abs|Tan)(?=\\s*\\()"
+        },
+        {
+          "comment": "Memory functions",
+          "name": "support.function.memory.spiderbasic",
+          "match": "(?i)\\b(AllocateStructure|ReAllocateMemory|AllocateMemory|FreeStructure|CompareMemory|MemorySize|FreeMemory|PokeL|PokeD|PokeS|PeekS|PeekB|PeekA|PeekL|PokeC|PeekU|PeekD|PokeW|PeekW|PeekC|PokeB|PokeU|PokeF|PeekF|PokeA)(?=\\s*\\()"
+        },
+        {
+          "comment": "Menu functions",
+          "name": "support.function.window.spiderbasic",
+          "match": "(?i)\\b(CreatePopupImageMenu|SetMenuTitleText|GetMenuTitleText|DisplayPopupMenu|DisableMenuItem|SetMenuItemText|UnbindMenuEvent|CreateImageMenu|GetMenuItemText|CreatePopupMenu|BindMenuEvent|CloseSubMenu|OpenSubMenu|CreateMenu|MenuTitle|MenuItem|FreeMenu|MenuBar|MenuID|IsMenu)(?=\\s*\\()"
+        },
+        {
+          "comment": "Mobile functions",
+          "name": "support.function.mobile.spiderbasic",
+          "match": "(?i)\\b(ChangeNavigatorMobilePage|CloseMobileContainer|AddTabBarMobileItem|GetMobileAttribute|SetMobileAttribute|ProgressBarMobile|AddListMobileItem|NavigatorMobile|ContainerMobile|SetMobileState|CheckBoxMobile|SplitterMobile|GetMobileState|TrackBarMobile|GetMobileText|SetMobileText|ToolBarMobile|DisableMobile|ButtonMobile|SwitchMobile|TabBarMobile|OptionMobile|AlertMobile|InputMobile|MobileStyle|ImageMobile|TextMobile|ShowMobile|FreeMobile|IconMobile|HtmlMobile|ListMobile|IsMobile)(?=\\s*\\()"
+        },
+        {
+          "comment": "Mouse functions",
+          "name": "support.function.input.spiderbasic",
+          "match": "(?i)\\b(ReleaseMouse|ExamineMouse|MouseDeltaY|MouseLocate|MouseButton|MouseDeltaX|MouseWheel|InitMouse|MouseX|MouseY)(?=\\s*\\()"
+        },
+        {
+          "comment": "Packer functions",
+          "name": "support.function.data.spiderbasic",
+          "match": "(?i)\\b(UncompressMemory|UncompressString|CompressMemory|CompressString)(?=\\s*\\()"
+        },
+        {
+          "comment": "RegularExpression functions",
+          "name": "support.function.data.spiderbasic",
+          "match": "(?i)\\b(ExtractRegularExpression|ReplaceRegularExpression|CreateRegularExpression|MatchRegularExpression|RegularExpressionError|FreeRegularExpression|IsRegularExpression)(?=\\s*\\()"
+        },
+        {
+          "comment": "Requester functions",
+          "name": "support.function.requester.spiderbasic",
+          "match": "(?i)\\b(OpenFileRequester|NextSelectedFile|SelectedFileName|MessageRequester|InputRequester|SelectedFileID)(?=\\s*\\()"
+        },
+        {
+          "comment": "Runtime functions",
+          "name": "support.function.debug.spiderbasic",
+          "match": "(?i)\\b(GetRuntimeInteger|SetRuntimeInteger|GetRuntimeDouble|GetRuntimeString|SetRuntimeString|SetRuntimeDouble|IsRuntime)(?=\\s*\\()"
+        },
+        {
+          "comment": "Screen functions",
+          "name": "support.function.image.spiderbasic",
+          "match": "(?i)\\b(ScreenShaderAttribute|OpenWindowedScreen|RemoveScreenShader|AddScreenShader|IsScreenActive|SetFrameRate|ResizeScreen|ScreenHeight|FlipBuffers|ScreenDepth|ScreenWidth|CloseScreen|ClearScreen|OpenScreen|FullScreen)(?=\\s*\\()"
+        },
+        {
+          "comment": "Sort functions",
+          "name": "support.function.collection.spiderbasic",
+          "match": "(?i)\\b(RandomizeArray|RandomizeList|SortArray|SortList)(?=\\s*\\()"
+        },
+        {
+          "comment": "Sound functions",
+          "name": "support.function.media.spiderbasic",
+          "match": "(?i)\\b(SetSoundPosition|GetSoundPosition|SoundLength|ResumeSound|SoundStatus|SoundVolume|PauseSound|PlaySound|StopSound|InitSound|LoadSound|FreeSound|SoundPan|IsSound)(?=\\s*\\()"
+        },
+        {
+          "comment": "Sprite functions",
+          "name": "support.function.image.spiderbasic",
+          "match": "(?i)\\b(DisplayTransparentSprite|SpriteShaderAttribute|SpritePixelCollision|RemoveSpriteShader|AddSpriteShader|SpriteCollision|SpriteQuality|DisplaySprite|RotateSprite|SpriteOutput|CreateSprite|SpriteHeight|SpriteWidth|SpriteDepth|FreeSprite|CopySprite|ZoomSprite|InitSprite|LoadSprite|ClipSprite|IsSprite)(?=\\s*\\()"
+        },
+        {
+          "comment": "String functions",
+          "name": "support.function.string.spiderbasic",
+          "match": "(?i)\\b(ReverseString|ReplaceString|InsertString|RemoveString|FormatNumber|CountString|StringField|FindString|LCase|RTrim|LTrim|Right|UCase|Space|StrU|LSet|StrD|RSet|Left|StrF|ValF|Trim|ValD|Bin|Str|Val|Hex|Asc|Chr|Len|Mid)(?=\\s*\\()"
+        },
+        {
+          "comment": "System functions",
+          "name": "support.function.system.spiderbasic",
+          "match": "(?i)\\b(CountProgramParameters|SplashScreenControl|ElapsedMilliseconds|ProgramParameter|DeviceBrightness|DeviceAlwaysOn|VibrateDevice|BatteryLevel|RemoveTimer|DeviceInfo|LoadScript|AddTimer)(?=\\s*\\()"
+        },
+        {
+          "comment": "ToolBar functions",
+          "name": "support.function.window.spiderbasic",
+          "match": "(?i)\\b(SetToolBarButtonState|GetToolBarButtonState|DisableToolBarButton|ToolBarImageButton|ToolBarSeparator|ToolBarToolTip|CreateToolBar|ToolBarHeight|FreeToolBar|IsToolBar|ToolBarID)(?=\\s*\\()"
+        },
+        {
+          "comment": "TouchScreen functions",
+          "name": "support.function.mobile.spiderbasic",
+          "match": "(?i)\\b(ExamineTouchScreen|TouchScreenPushed|TouchDeltaX|TouchDeltaY|TouchY|TouchX)(?=\\s*\\()"
+        },
+        {
+          "comment": "VectorDrawing functions",
+          "name": "support.function.drawing.spiderbasic",
+          "match": "(?i)\\b(VectorSourceCircularGradient|VectorSourceLinearGradient|VectorSourceGradientColor|TranslateCoordinates|ConvertCoordinateY|ConvertCoordinateX|StartVectorDrawing|VectorOutputHeight|RestoreVectorState|VectorOutputWidth|RotateCoordinates|VectorSourceColor|VectorResolutionX|VectorResolutionY|StopVectorDrawing|ResetCoordinates|FillVectorOutput|VectorTextHeight|BeginVectorLayer|PathBoundsHeight|ScaleCoordinates|SkewCoordinates|PathBoundsWidth|VectorTextWidth|DrawVectorImage|AddPathSegments|SaveVectorState|DrawVectorText|EndVectorLayer|PathPointAngle|CustomDashPath|MovePathCursor|AddPathEllipse|AddPathCircle|IsInsidePath|PathSegments|AddPathCurve|IsPathEmpty|PathBoundsX|AddPathLine|PathCursorY|PathCursorX|PathBoundsY|VectorUnit|VectorFont|PathPointY|PathPointX|StrokePath|AddPathArc|PathLength|AddPathBox|ResetPath|ClosePath|DashPath|FillPath|DotPath)(?=\\s*\\()"
+        },
+        {
+          "comment": "WebSocket functions",
+          "name": "support.function.network.spiderbasic",
+          "match": "(?i)\\b(SendWebSocketString|SendWebSocketData|CloseWebSocket|OpenWebSocket|IsWebSocket)(?=\\s*\\()"
+        },
+        {
+          "comment": "Window functions",
+          "name": "support.function.window.spiderbasic",
+          "match": "(?i)\\b(RemoveKeyboardShortcut|AddKeyboardShortcut|RemoveWindowTimer|GetActiveWindow|SetActiveWindow|GetWindowColor|AddWindowTimer|SetWindowTitle|EventWebSocket|GetWindowTitle|SetWindowColor|DisableWindow|SetWindowData|WindowOpacity|GetWindowData|StickyWindow|ResizeWindow|WindowBounds|WindowMouseX|WindowMouseY|WindowHeight|UnbindEvent|CloseWindow|EventString|EventMobile|WindowWidth|EventWindow|EventGadget|HideWindow|EventTimer|OpenWindow|PostEvent|EventData|EventMenu|BindEvent|EventType|WindowID|IsWindow|WindowX|WindowY|Event)(?=\\s*\\()"
+        },
+        {
+          "comment": "XML functions",
+          "name": "support.function.data.spiderbasic",
+          "match": "(?i)\\b(ResolveXMLAttributeName|ExamineXMLAttributes|RemoveXMLAttribute|ResolveXMLNodeName|XMLAttributeValue|NextXMLAttribute|SetXMLNodeOffset|XMLAttributeName|GetXMLNodeOffset|GetXMLStandalone|XMLErrorPosition|SetXMLStandalone|XMLNodeFromPath|SetXMLAttribute|PreviousXMLNode|GetXMLAttribute|SetXMLEncoding|SetXMLNodeText|GetXMLEncoding|GetXMLNodeName|GetXMLNodeText|XMLChildCount|DeleteXMLNode|ParentXMLNode|XMLNodeFromID|CreateXMLNode|XMLErrorLine|ChildXMLNode|MainXMLNode|XMLNodeType|XMLNodePath|RootXMLNode|NextXMLNode|ComposeXML|XMLStatus|ExportXML|CreateXML|XMLError|ParseXML|LoadXML|FreeXML|IsXML)(?=\\s*\\()"
+        }
+      ]
+    },
+    "pb-constants": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.spiderbasic",
+          "match": "\\b(#True|#False|#Null|#Empty|#NUL|#LF|#CR|#TAB|#CRLF)\\b"
+        }
+      ]
+    },
+    "user-constants": {
+      "name": "constant.other.spiderbasic",
+      "match": "#[a-zA-Z_][a-zA-Z0-9_]*"
+    },
+    "operators": {
+      "name": "keyword.operator.spiderbasic",
+      "match": "\\+|-|\\*|/|\\\\|%|=|<>|<=|>=|<<|>>|[<>]|!|&|\\||\\^|~|@|\\?"
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.spiderbasic",
+          "match": "\\$[0-9A-Fa-f]+"
+        },
+        {
+          "name": "constant.numeric.binary.spiderbasic",
+          "match": "%[01]+"
+        },
+        {
+          "name": "constant.numeric.float.spiderbasic",
+          "match": "\\b[0-9]+\\.[0-9]*(?:[eE][+-]?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.spiderbasic",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "types": {
+      "name": "storage.type.spiderbasic",
+      "match": "\\.(b|a|w|u|l|i|q|f|d|s|c|String)\\b"
+    },
+    "labels": {
+      "patterns": [
+        {
+          "name": "entity.name.label.spiderbasic",
+          "match": "^\\s*[a-zA-Z_][a-zA-Z0-9_]*:"
+        },
+        {
+          "name": "entity.name.label.spiderbasic",
+          "match": "\\b(Goto|Gosub)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "2": {
+              "name": "entity.name.label.spiderbasic"
+            }
+          }
+        }
+      ]
+    },
+    "procedure-call": {
+      "name": "entity.name.function.spiderbasic",
+      "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\\s*\\()"
+    },
+    "variables": {
+      "name": "variable.other.spiderbasic",
+      "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+    }
+  }
+}

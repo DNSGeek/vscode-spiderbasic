@@ -1,0 +1,90 @@
+{
+  "name": "vscode-spiderbasic",
+  "displayName": "SpiderBasic",
+  "description": "SpiderBasic language support for Visual Studio Code",
+  "version": "0.1.0",
+  "publisher": "DNSGeek",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Snippets", "Formatters"],
+  "keywords": ["spiderbasic", "basic", "sb", "web", "javascript"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DNSGeek/vscode-spiderbasic"
+  },
+  "contributes": {
+    "languages": [{
+      "id": "spiderbasic",
+      "aliases": ["SpiderBasic", "spiderbasic", "sb"],
+      "extensions": [".sb", ".sbi", ".sbf", ".sbp"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "spiderbasic",
+      "scopeName": "source.spiderbasic",
+      "path": "./syntaxes/spiderbasic.tmLanguage.json"
+    }],
+    "snippets": [{
+      "language": "spiderbasic",
+      "path": "./snippets/spiderbasic.json"
+    }],
+    "configuration": {
+      "type": "object",
+      "title": "SpiderBasic",
+      "properties": {
+        "spiderbasic.compilerPath": {
+          "type": "string", "default": "",
+          "description": "Path to the SpiderBasic compiler executable"
+        },
+        "spiderbasic.compilerArgs": {
+          "type": "array", "items": { "type": "string" }, "default": [],
+          "description": "Extra arguments passed to the compiler"
+        },
+        "spiderbasic.enableLinting": {
+          "type": "boolean", "default": true,
+          "description": "Enable background linting"
+        },
+        "spiderbasic.formatOnSave": {
+          "type": "boolean", "default": false,
+          "description": "Auto-format on save"
+        },
+        "spiderbasic.indentSize": {
+          "type": "number", "default": 2,
+          "description": "Spaces per indent level"
+        }
+      }
+    },
+    "commands": [
+      { "command": "spiderbasic.compile",    "title": "SpiderBasic: Compile",         "icon": "$(play)" },
+      { "command": "spiderbasic.compileRun", "title": "SpiderBasic: Compile & Run",   "icon": "$(run)" },
+      { "command": "spiderbasic.formatDocument", "title": "SpiderBasic: Format Document" },
+      { "command": "spiderbasic.showOutput", "title": "SpiderBasic: Show Output" }
+    ],
+    "menus": {
+      "editor/title": [
+        { "command": "spiderbasic.compileRun", "when": "resourceLangId == spiderbasic", "group": "navigation" }
+      ],
+      "editor/context": [
+        { "command": "spiderbasic.compile",    "when": "resourceLangId == spiderbasic", "group": "spiderbasic" },
+        { "command": "spiderbasic.compileRun", "when": "resourceLangId == spiderbasic", "group": "spiderbasic" }
+      ]
+    },
+    "keybindings": [
+      { "command": "spiderbasic.compileRun", "key": "f5",      "when": "resourceLangId == spiderbasic" },
+      { "command": "spiderbasic.compile",    "key": "ctrl+f5", "when": "resourceLangId == spiderbasic" }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch":   "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^2.0.0"
+  }
+}

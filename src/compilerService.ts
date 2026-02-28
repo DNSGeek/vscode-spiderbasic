@@ -1,0 +1,163 @@
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as cp from 'child_process';
+
+export class CompilerService {
+  private outputChannel: vscode.OutputChannel;
+  private currentProcess: cp.ChildProcess | null = null;
+  private diagnostics: vscode.DiagnosticCollection;
+
+  constructor(outputChannel: vscode.OutputChannel) {
+    this.outputChannel = outputChannel;
+    this.diagnostics = vscode.languages.createDiagnosticCollection('spiderbasic-compiler');
+  }
+
+  async compile(filePath: string, run: boolean): Promise<void> {
+    const cfg = vscode.workspace.getConfiguration('spiderbasic');
+    let compilerPath = cfg.get<string>('compilerPath', '');
+
+    if (!compilerPath) {
+      compilerPath = await this.detectCompiler();
+      if (!compilerPath) {
+        const result = await vscode.window.showErrorMessage(
+          'SpiderBasic compiler not found. Please set spiderbasic.compilerPath in Settings.',
+          'Open Settings'
+        );
+        if (result === 'Open Settings') {
+          vscode.commands.executeCommand('workbench.action.openSettings', 'spiderbasic.compilerPath');
+        }
+        return;
+      }
+    }
+
+    const extraArgs = cfg.get<string[]>('compilerArgs', []);
+    const outputFile = this.getOutputPath(filePath);
+    const args: string[] = [filePath, '--exe', outputFile, ...extraArgs];
+    if (run) { args.push('--run'); }
+
+    this.outputChannel.clear();
+    this.outputChannel.show(true);
+    this.outputChannel.appendLine(`▶ Compiling: ${path.basename(filePath)}`);
+    this.outputChannel.appendLine(`  ${compilerPath} ${args.join(' ')}`);
+    this.outputChannel.appendLine('');
+
+    if (this.currentProcess) {
+      this.currentProcess.kill();
+      this.currentProcess = null;
+    }
+
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: `SpiderBasic: ${run ? 'Compiling & Running' : 'Compiling'} ${path.basename(filePath)}`,
+        cancellable: true,
+      },
+      async (_progress, token) => {
+        return new Promise<void>((resolve) => {
+          this.currentProcess = cp.spawn(compilerPath, args, {
+            cwd: path.dirname(filePath),
+          });
+
+          token.onCancellationRequested(() => {
+            this.currentProcess?.kill();
+            this.outputChannel.appendLine('\n⛔ Compilation cancelled.');
+            resolve();
+          });
+
+          const diags = new Map<string, vscode.Diagnostic[]>();
+
+          this.currentProcess.stdout?.on('data', (data: Buffer) => {
+            const text = data.toString();
+            this.outputChannel.append(text);
+            this.parseCompilerOutput(text, diags, filePath);
+          });
+
+          this.currentProcess.stderr?.on('data', (data: Buffer) => {
+            const text = data.toString();
+            this.outputChannel.append(text);
+            this.parseCompilerOutput(text, diags, filePath);
+          });
+
+          this.currentProcess.on('close', (code) => {
+            this.currentProcess = null;
+            this.diagnostics.clear();
+            for (const [file, fileDiags] of diags) {
+              this.diagnostics.set(vscode.Uri.file(file), fileDiags);
+            }
+            if (code === 0) {
+              this.outputChannel.appendLine(`\n✅ Compilation successful → ${outputFile}`);
+              vscode.window.setStatusBarMessage('SpiderBasic: Compiled successfully ✅', 5000);
+            } else {
+              this.outputChannel.appendLine(`\n❌ Compilation failed (exit code ${code})`);
+              vscode.window.setStatusBarMessage('SpiderBasic: Compilation failed ❌', 5000);
+            }
+            resolve();
+          });
+
+          this.currentProcess.on('error', (err) => {
+            this.outputChannel.appendLine(`\n❌ Compiler error: ${err.message}`);
+            vscode.window.showErrorMessage(`SpiderBasic compiler error: ${err.message}`);
+            resolve();
+          });
+        });
+      }
+    );
+  }
+
+  private parseCompilerOutput(
+    text: string,
+    diags: Map<string, vscode.Diagnostic[]>,
+    defaultFile: string
+  ): void {
+    const p1 = /Error:\s*(.+?)\s+Line\s+(\d+)\s*-\s*(.+)/gi;
+    let m: RegExpExecArray | null;
+    while ((m = p1.exec(text)) !== null) {
+      this.addDiag(diags, m[1].trim(), parseInt(m[2]) - 1, m[3].trim());
+    }
+    const p2 = /^Line\s+(\d+)\s*-\s*(.+)/gim;
+    while ((m = p2.exec(text)) !== null) {
+      this.addDiag(diags, defaultFile, parseInt(m[1]) - 1, m[2].trim());
+    }
+  }
+
+  private addDiag(diags: Map<string, vscode.Diagnostic[]>, file: string, line: number, message: string): void {
+    const range = new vscode.Range(Math.max(0, line), 0, Math.max(0, line), 100);
+    const diag = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
+    diag.source = 'sbcompiler';
+    if (!diags.has(file)) { diags.set(file, []); }
+    diags.get(file)!.push(diag);
+  }
+
+  private getOutputPath(sourcePath: string): string {
+    const dir = path.dirname(sourcePath);
+    const base = path.basename(sourcePath, path.extname(sourcePath));
+    const isWindows = process.platform === 'win32';
+    return path.join(dir, base + (isWindows ? '.exe' : ''));
+  }
+
+  private async detectCompiler(): Promise<string> {
+    const candidates: string[] = [];
+    if (process.platform === 'win32') {
+      candidates.push(
+        'C:\\Program Files\\SpiderBasic\\Compilers\\sbcompiler.exe',
+        'C:\\Program Files (x86)\\SpiderBasic\\Compilers\\sbcompiler.exe',
+      );
+    } else if (process.platform === 'darwin') {
+      candidates.push(
+        '/Applications/SpiderBasic/sbcompiler',
+        '/usr/local/bin/sbcompiler',
+      );
+    } else {
+      candidates.push(
+        '/usr/bin/sbcompiler',
+        '/usr/local/bin/sbcompiler',
+        `${process.env.HOME}/spiderbasic/sbcompiler`,
+      );
+    }
+    const fs = await import('fs');
+    for (const c of candidates) {
+      if (fs.existsSync(c)) { return c; }
+    }
+    return '';
+  }
+}
